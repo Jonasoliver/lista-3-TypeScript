@@ -4,18 +4,34 @@ import TipoCadastroCliente from "./tipoCadastroCliente";
 import TipoListagemClientes from "./tipoListagemClientes";
 import AtualizarClienteTitular from "./atualizarCliente";
 import DeletarClienteTitular from "./deletarClienteTitular";
-import Cliente from "../modelos/cliente"; // Importe a classe Cliente
+import Cliente from "../modelos/cliente";
+import Diretor from "../modelos/diretor";
+import { GerenciadorHospedagens } from "../modelos/gerenciadorHospedagens";
+import Reservas from "./reserva";
 
 export default class Principal extends Processo {
-    private clienteTitular!: Cliente; // Adicione uma propriedade para o cliente titular
+    private clienteTitular!: Cliente;
+    private diretor: Diretor;
+    private gerenciadorHospedagens: GerenciadorHospedagens;
 
     constructor() {
         super();
         this.execucao = true;
         this.menu = new MenuPrincipal();
         
-        // Crie um cliente titular, você pode definir valores reais aqui
         this.clienteTitular = new Cliente("Nome", "Nome Social", new Date());
+        
+        // Inicializa o diretor e o gerenciador de hospedagens apenas uma vez no construtor do Principal
+        this.diretor = new Diretor();
+        this.gerenciadorHospedagens = new GerenciadorHospedagens();
+
+        // Cria as acomodações
+        this.diretor.criarCasalSimples();
+        this.diretor.criarFamiliaSimples();
+        this.diretor.criarFamiliaSuper();
+        this.diretor.criarFamiliaPlus();
+        this.diretor.criarSolteiroSimples();
+        this.diretor.criarSolteiroMais();
     }
 
     processar(): void {
@@ -24,7 +40,7 @@ export default class Principal extends Processo {
 
         switch (this.opcao) {
             case 1:
-                this.processo = new TipoCadastroCliente(this.clienteTitular); // Passe o cliente titular
+                this.processo = new TipoCadastroCliente(this.clienteTitular);
                 this.processo.processar();
                 break;
             case 2:
@@ -37,6 +53,11 @@ export default class Principal extends Processo {
                 break;
             case 4:
                 this.processo = new DeletarClienteTitular();
+                this.processo.processar();
+                break;
+            case 5:
+                // Passa as instâncias existentes de GerenciadorHospedagens e Diretor para Reservas
+                this.processo = new Reservas(this.gerenciadorHospedagens, this.diretor);
                 this.processo.processar();
                 break;
             case 0:

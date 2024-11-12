@@ -7,36 +7,32 @@ import SolteiroSimples from "./solteiroSimples";
 import SolteiroMais from "./solteiroMais";
 
 export default class Diretor {
-  private acomodacoes: Acomodacao[];
+  public acomodacoes: Acomodacao[];
 
   constructor() {
     this.acomodacoes = [];
   }
 
-  // Adiciona uma acomodação à lista
   adicionarAcomodacao(acomodacao: Acomodacao): void {
     this.acomodacoes.push(acomodacao);
   }
 
-  // Lista todas as acomodações
   listarAcomodacoes(): void {
-    this.acomodacoes.forEach((acomodacao) => {
-      console.log(acomodacao);
-    });
+    if (this.acomodacoes.length > 0) {
+      this.acomodacoes.forEach((acomodacao, index) => {
+        console.log(`${index + 1}. ${acomodacao.nome}`);
+      });
+    } else {
+      console.log("Nenhuma acomodação disponível.");
+    }
   }
 
-  // Encontra uma acomodação pelo nome
   encontrarAcomodacaoPorNome(nome: string): Acomodacao | undefined {
-    return this.acomodacoes.find(
-      (acomodacao) => acomodacao.nome === nome
-    );
+    return this.acomodacoes.find((acomodacao) => acomodacao.nome === nome);
   }
 
-  // Remove uma acomodação pelo nome
   removerAcomodacao(nome: string): void {
-    const index = this.acomodacoes.findIndex(
-      (acomodacao) => acomodacao.nome === nome
-    );
+    const index = this.acomodacoes.findIndex((acomodacao) => acomodacao.nome === nome);
     if (index !== -1) {
       this.acomodacoes.splice(index, 1);
     } else {
@@ -44,14 +40,6 @@ export default class Diretor {
     }
   }
 
-  // Método para contar quantas acomodações de um tipo específico existem
-  contarPorTipo(tipo: string): number {
-    return this.acomodacoes.filter(
-      (acomodacao) => acomodacao.nome === tipo
-    ).length;
-  }
-
-  // Métodos para criar e adicionar diferentes tipos de acomodações
   criarCasalSimples(): Acomodacao {
     const acomodacao = new CasalSimples();
     this.adicionarAcomodacao(acomodacao);

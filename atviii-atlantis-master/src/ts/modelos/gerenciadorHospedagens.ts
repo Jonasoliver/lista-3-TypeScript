@@ -1,4 +1,3 @@
-// GerenciadorHospedagens.ts
 import { Hospedagem } from "./hospedagem";
 import { Acomodacao } from "./acomodacao";
 
@@ -24,11 +23,18 @@ export class GerenciadorHospedagens {
         return false; // Acomodação já está ocupada
       }
     }
-    return true; // não esta ocupada
+    return true; // Acomodação não está ocupada
   }
 
   // Método para listar todas as hospedagens
   listarHospedagens(): string[] {
     return this.hospedagens.map(hospedagem => hospedagem.detalhesHospedagem());
+  }
+
+  // Método para buscar hospedagens por hóspede
+  listarHospedagensPorHospede(nomeHospede: string): string[] {
+    return this.hospedagens
+      .filter(hospedagem => hospedagem.nomeHospede === nomeHospede)
+      .map(hospedagem => hospedagem.detalhesHospedagem());
   }
 }
