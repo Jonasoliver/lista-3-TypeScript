@@ -4,26 +4,30 @@ import { Acomodacao } from "./acomodacao";
 export class GerenciadorHospedagens {
   private hospedagens: Hospedagem[] = [];
 
-  // Método para registrar uma nova hospedagem
-  registrarHospedagem(nomeHospede: string, dataCheckIn: Date, acomodacao: Acomodacao): string {
+  // Método para registrar uma nova hospedagem com data de entrada e saída
+  registrarHospedagem(nomeHospede: string, dataCheckIn: Date, dataCheckOut: Date, acomodacao: Acomodacao): string {
     // Verificar se a acomodação já está ocupada
-    if (this.verificarDisponibilidade(acomodacao)) {
-      const hospedagem = new Hospedagem(nomeHospede, dataCheckIn, acomodacao);
+    if (this.verificarDisponibilidade(acomodacao, dataCheckIn, dataCheckOut)) {
+      const hospedagem = new Hospedagem(nomeHospede, dataCheckIn, dataCheckOut, acomodacao);
       this.hospedagens.push(hospedagem);
       return `Reserva confirmada para ${nomeHospede} na acomodação ${acomodacao.nome}`;
     } else {
-      return `A acomodação ${acomodacao.nome} já está ocupada.`;
+      return `A acomodação ${acomodacao.nome} já está ocupada para as datas selecionadas.`;
     }
   }
 
-  // Método para verificar a disponibilidade de uma acomodação
-  verificarDisponibilidade(acomodacao: Acomodacao): boolean {
+  // Método para verificar a disponibilidade de uma acomodação com base nas datas
+  verificarDisponibilidade(acomodacao: Acomodacao, dataCheckIn: Date, dataCheckOut: Date): boolean {
     for (let hospedagem of this.hospedagens) {
-      if (hospedagem.acomodacao === acomodacao) {
-        return false; // Acomodação já está ocupada
+      if (
+        hospedagem.acomodacao === acomodacao &&
+        ((dataCheckIn >= hospedagem.dataCheckIn && dataCheckIn <= hospedagem.dataCheckOut) ||
+         (dataCheckOut >= hospedagem.dataCheckIn && dataCheckOut <= hospedagem.dataCheckOut))
+      ) {
+        return false; // Acomodação já está ocupada nas datas
       }
     }
-    return true; // Acomodação não está ocupada
+    return true; // Acomodação não está ocupada nas datas
   }
 
   // Método para listar todas as hospedagens

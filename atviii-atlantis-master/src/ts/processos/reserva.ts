@@ -1,8 +1,14 @@
 import Processo from "../abstracoes/processo";
-import MenuReservas from "../menus/menuReservas";
+import MenuAcomodacoes from "../menus/menuReservas";
+import Diretor from "../modelos/diretor";
 import { GerenciadorHospedagens } from "../modelos/gerenciadorHospedagens";
 import { Acomodacao } from "../modelos/acomodacao";
-import Diretor from "../modelos/diretor";  // Certifique-se de importar o Diretor
+import CasalSimples from "../modelos/casalSimples";
+import FamiliaSimples from "../modelos/FamiliaSimples";
+import FamiliaSuper from "../modelos/FamiliaSuper";
+import FamiliaPlus from "../modelos/FamiliaPlus";
+import SolteiroSimples from "../modelos/solteiroSimples";
+import SolteiroMais from "../modelos/solteiroMais";
 
 export default class Reservas extends Processo {
     private gerenciadorHospedagens: GerenciadorHospedagens;
@@ -12,7 +18,7 @@ export default class Reservas extends Processo {
         super();
         this.gerenciadorHospedagens = gerenciadorHospedagens;
         this.diretor = diretor;
-        this.menu = new MenuReservas();
+        this.menu = new MenuAcomodacoes();
     }
 
     processar(): void {
@@ -21,13 +27,25 @@ export default class Reservas extends Processo {
 
         switch (this.opcao) {
             case 1:
-                this.listarAcomadacoesDisponiveis();
+                this.listarAcomodacoesDisponiveis();
                 break;
             case 2:
-                this.fazerReserva();
+                this.criarAcomodacao(CasalSimples);
                 break;
             case 3:
-                this.consultarHospedagens();
+                this.criarAcomodacao(FamiliaSimples);
+                break;
+            case 4:
+                this.criarAcomodacao(FamiliaSuper);
+                break;
+            case 5:
+                this.criarAcomodacao(FamiliaPlus);
+                break;
+            case 6:
+                this.criarAcomodacao(SolteiroSimples);
+                break;
+            case 7:
+                this.criarAcomodacao(SolteiroMais);
                 break;
             case 0:
                 console.log("Voltando ao menu principal...");
@@ -39,37 +57,24 @@ export default class Reservas extends Processo {
     }
 
     // Listar todas as acomodações disponíveis
-    private listarAcomadacoesDisponiveis() {
+    private listarAcomodacoesDisponiveis() {
         console.log("\nAcomodações Disponíveis:");
-        this.diretor.listarAcomodacoes(); // Certifique-se de que o Diretor tem esse método.
+        this.diretor.listarAcomodacoes();
     }
 
-    // Fazer uma nova reserva
-    private fazerReserva() {
+    // Método genérico para criar qualquer tipo de acomodação
+    private criarAcomodacao(acomodacaoType: new () => Acomodacao) {
         const nomeHospede = this.entrada.receberTexto("Digite o nome do hóspede:");
-        const dataCheckIn = new Date(this.entrada.receberTexto("Digite a data de Check-in (yyyy-mm-dd):"));
+        const dataEntrada = new Date(this.entrada.receberTexto("Digite a data de entrada (yyyy-mm-dd):"));
+        const dataSaida = new Date(this.entrada.receberTexto("Digite a data de saída (yyyy-mm-dd):"));
 
-        this.listarAcomadacoesDisponiveis();
-        const escolhaAcomodacao = parseInt(this.entrada.receberTexto("Escolha a acomodação (número):")) - 1;
+        const acomodacao = this.diretor.criarAcomodacao(acomodacaoType);
+        const mensagem = this.gerenciadorHospedagens.registrarHospedagem(nomeHospede, dataEntrada, dataSaida, acomodacao);
 
-        const acomodacaoEscolhida = this.diretor.acomodacoes[escolhaAcomodacao];
-
-        if (acomodacaoEscolhida) {
-            const mensagem = this.gerenciadorHospedagens.registrarHospedagem(nomeHospede, dataCheckIn, acomodacaoEscolhida);
-            console.log(mensagem);
-        } else {
-            console.log("Acomodação inválida.");
-        }
-    }
-
-    // Consultar as hospedagens atuais
-    private consultarHospedagens() {
-        const hospedagens = this.gerenciadorHospedagens.listarHospedagens();
-        if (hospedagens.length > 0) {
-            console.log("\nHospedagens Atuais:");
-            hospedagens.forEach(hospedagem => console.log(hospedagem));
-        } else {
-            console.log("Não há hospedagens registradas.");
-        }
+        console.log("Cadastro feito com sucesso!");
+        console.log(`Nome do hóspede: ${nomeHospede}`);
+        console.log(`Data de entrada: ${dataEntrada.toLocaleDateString()}`);
+        console.log(`Data de saída: ${dataSaida.toLocaleDateString()}`);
+        console.log(`Tipo de acomodação: ${acomodacao.nome}`);
     }
 }
